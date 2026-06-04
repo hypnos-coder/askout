@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lock It In | A Special Question</title>
+  
+  <!-- Meta Tags for SEO -->
+  <meta name="description" content="A romantic, playful, and interactive request asking a very special question, followed by an unlocked celebratory date itinerary.">
+  <meta property="og:title" content="Lock It In | A Special Question">
+  <meta property="og:description" content="A romantic, playful, and interactive request asking a very special question, followed by an unlocked celebratory date itinerary.">
+  <meta property="og:type" content="website">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  
+  <!-- Three.js for 3D WebGL Background -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+</head>
+<body>
+
+  <!-- Looping Background Music -->
+  <audio id="bg-music" src="assets/music/background.mp3" loop preload="auto"></audio>
+
+  <!-- Floating Premium Music Controller -->
+  <div class="music-control-container">
+    <button id="btn-music-toggle" class="music-toggle" aria-label="Toggle background music">
+      <span class="music-icon">🎵</span>
+      <div class="music-waves hidden">
+        <span class="stroke"></span>
+        <span class="stroke"></span>
+        <span class="stroke"></span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Confetti Canvas for physics explosion overlay -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Names flying collision overlay -->
+  <div id="names-overlay" class="names-overlay hidden">
+    <div id="name-left" class="flying-name">Amen</div>
+    <div id="heart-collision" class="collision-heart">❤️</div>
+    <div id="name-right" class="flying-name">Rejoice</div>
+  </div>
+
+  <!-- Main Interactive App Container -->
+  <main class="app-container">
+    <div id="main-card" class="glass-card">
+      
+      <!-- Primary Question State -->
+      <section id="question-section" class="card-section active">
+        <div class="heart-icon-wrapper">
+          <svg class="heart-pulse-svg" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heart-gradient)" stroke="none"/>
+            <defs>
+              <linearGradient id="heart-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff4b8b" />
+                <stop offset="100%" stop-color="#ff1a53" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        
+        <h1 class="main-title">May I be your boyfriend?</h1>
+        
+        <div id="button-container" class="btn-group">
+          <button id="btn-yes" class="pulse-glow" aria-label="Accept the proposal">Yes</button>
+        </div>
+      </section>
+
+      <!-- Celebratory Success State -->
+      <section id="success-section" class="card-section hidden">
+        <div class="success-badge">
+          <svg class="checkmark-svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12" stroke="url(#check-gradient)"/>
+            <defs>
+              <linearGradient id="check-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffd700" />
+                <stop offset="100%" stop-color="#ffa500" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        
+        <h2 class="success-title">It's a Date! ❤️</h2>
+        <p class="success-subtitle">Mission Accomplished. Here's our celebratory plan:</p>
+        
+        <!-- Interactive Itinerary Timeline -->
+        <div id="itinerary-timeline" class="timeline">
+          
+          <div class="timeline-item" style="--delay: 1">
+            <div class="timeline-badge">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a10 10 0 0 1 10 10c0 5.25-10 10-10 10S2 17.25 2 12A10 10 0 0 1 12 2z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </div>
+            <div class="timeline-content glass-card-nested">
+              <span class="timeline-time">Step 1 — Morning</span>
+              <h3>Como Japanese Garden</h3>
+              <p>A tranquil stroll through the historic, peaceful Japanese Garden in St. Paul, surrounded by flowers, stone lanterns, and serene water streams.</p>
+            </div>
+          </div>
+          
+          <div class="timeline-item" style="--delay: 2">
+            <div class="timeline-badge">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="timeline-content glass-card-nested">
+              <span class="timeline-time">Step 2 — Afternoon</span>
+              <h3>Surprise Activity</h3>
+              <p>A mysterious, playful, and action-packed afternoon adventure custom-designed to bring out big smiles and lots of laughter.</p>
+            </div>
+          </div>
+          
+          <div class="timeline-item" style="--delay: 3">
+            <div class="timeline-badge">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <div class="timeline-content glass-card-nested">
+              <span class="timeline-time">Step 3 — Evening</span>
+              <h3>Celebratory Dinner</h3>
+              <p>An exquisite, fine-dining candlelight dinner at an upscale restaurant, complete with delicious food, glowing ambient lighting, and high toasts.</p>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Core JavaScript -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
