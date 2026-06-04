@@ -502,12 +502,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Autoplay fallback: start music on any click inside the body
-  document.body.addEventListener("click", () => {
-    if (!musicStarted) {
-      playMusic();
-    }
-  }, { once: true });
+  // Attempt to play music immediately upon entering the website
+  playMusic();
+
+  // Autoplay fallback: start music on any interaction (click or touch) on the document if blocked
+  const playAudioOnGesture = () => {
+    playMusic();
+    document.removeEventListener("click", playAudioOnGesture);
+    document.removeEventListener("touchstart", playAudioOnGesture);
+  };
+
+  document.addEventListener("click", playAudioOnGesture);
+  document.addEventListener("touchstart", playAudioOnGesture, { passive: true });
 
   /* =========================================================================
      5. ROMANTIC FLOATING HEARTS EMITTER
