@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initScene();
 
   /* =========================================================================
-     2. CONFETTI PHYSICS SYSTEM
+     2. WHITE TULIP PHYSICS EXPLOSION SYSTEM
      ========================================================================= */
   let confettiParticles = [];
   let isConfettiRunning = false;
@@ -238,35 +238,73 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", resizeConfettiCanvas);
   resizeConfettiCanvas();
 
+  // Helper to draw a beautiful 2D white tulip on canvas
+  function drawTulip(ctx, size, color) {
+    ctx.save();
+    
+    // Create a beautiful white-to-soft-pink/lavender gradient inside each tulip
+    const grad = ctx.createLinearGradient(0, -size * 0.5, 0, size * 0.5);
+    grad.addColorStop(0, "#ffffff"); // Pure white tip
+    grad.addColorStop(0.65, color);  // Curated white shade (lavender blush, alabaster, etc.)
+    grad.addColorStop(1, "#ebdceb");   // Soft lavender base
+    ctx.fillStyle = grad;
+
+    // Draw the Tulip petals using Bezier curves
+    // Left petal
+    ctx.beginPath();
+    ctx.moveTo(0, size * 0.4);
+    ctx.bezierCurveTo(-size * 0.45, size * 0.25, -size * 0.45, -size * 0.2, -size * 0.2, -size * 0.45);
+    ctx.bezierCurveTo(-size * 0.1, -size * 0.2, -size * 0.05, 0, 0, size * 0.4);
+    ctx.closePath();
+    ctx.fill();
+
+    // Right petal
+    ctx.beginPath();
+    ctx.moveTo(0, size * 0.4);
+    ctx.bezierCurveTo(size * 0.45, size * 0.25, size * 0.45, -size * 0.2, size * 0.2, -size * 0.45);
+    ctx.bezierCurveTo(size * 0.1, -size * 0.2, size * 0.05, 0, 0, size * 0.4);
+    ctx.closePath();
+    ctx.fill();
+
+    // Center petal
+    ctx.beginPath();
+    ctx.moveTo(0, size * 0.4);
+    ctx.bezierCurveTo(-size * 0.12, -size * 0.1, -size * 0.08, -size * 0.5, 0, -size * 0.55);
+    ctx.bezierCurveTo(size * 0.08, -size * 0.5, size * 0.12, -size * 0.1, 0, size * 0.4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+  }
+
   function triggerConfettiExplosion(sourceX, sourceY) {
-    const count = 180;
+    const count = 120; // Slightly lower count for clean petal physics
     const colors = [
-      "#ff4b8b",
-      "#ff85b3",
-      "#9b51e0",
-      "#ffd700",
-      "#ffffff",
-      "#00e5ff",
+      "#ffffff", // Pure white
+      "#fff0f5", // Lavender blush
+      "#fdfaf6", // Alabaster/Pearl
+      "#fffaf0", // Floral white
+      "#fcf6f5", // Soft rose-white
+      "#f9f1f6"  // Lilac white
     ];
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 4 + Math.random() * 12;
+      const speed = 3 + Math.random() * 8; // Gentler launch speeds
 
       confettiParticles.push({
         x: sourceX,
         y: sourceY,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 4,
-        size: 5 + Math.random() * 9,
+        vy: Math.sin(angle) * speed - 2,
+        size: 10 + Math.random() * 10, // Larger size to make shape visible
         color: colors[Math.floor(Math.random() * colors.length)],
-        shape: Math.random() > 0.4 ? "rect" : "circle",
         rotation: Math.random() * Math.PI,
-        rotationSpeed: -0.1 + Math.random() * 0.2,
+        rotationSpeed: -0.05 + Math.random() * 0.1, // Slower rotation
         opacity: 1,
-        fadeSpeed: 0.005 + Math.random() * 0.01,
-        gravity: 0.18 + Math.random() * 0.1,
-        drag: 0.96 + Math.random() * 0.02,
+        fadeSpeed: 0.003 + Math.random() * 0.005, // Slower fading
+        gravity: 0.06 + Math.random() * 0.04, // Flutter down slowly
+        drag: 0.97 + Math.random() * 0.01,
       });
     }
 
@@ -295,20 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ctxConfetti.globalAlpha = p.opacity;
       ctxConfetti.translate(p.x, p.y);
       ctxConfetti.rotate(p.rotation);
-      ctxConfetti.fillStyle = p.color;
 
-      if (p.shape === "rect") {
-        ctxConfetti.fillRect(
-          -p.size / 2,
-          -p.size / 2,
-          p.size,
-          p.size * 1.5
-        );
-      } else {
-        ctxConfetti.beginPath();
-        ctxConfetti.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-        ctxConfetti.fill();
-      }
+      // Draw the beautiful white tulip shape
+      drawTulip(ctxConfetti, p.size, p.color);
+
       ctxConfetti.restore();
 
       if (p.opacity <= 0 || p.y > confettiCanvas.height) {
@@ -328,17 +356,16 @@ document.addEventListener("DOMContentLoaded", () => {
      3. YES BUTTON — SUCCESS STATE TRANSITION
      ========================================================================= */
   
-  // Heart-shaped confetti explosion using mathematical parametric formulas!
+  // Heart-shaped white tulip explosion!
   function triggerHeartConfettiExplosion(sourceX, sourceY) {
-    const count = 260; // Massive heart explosion
+    const count = 180; // Elegant heart-shaped petal release
     const colors = [
-      "#ff4b8b",
-      "#ff85b3",
-      "#9b51e0",
-      "#ffd700",
-      "#ffffff",
-      "#ff1a53",
-      "#00e5ff"
+      "#ffffff", // Pure white
+      "#fff0f5", // Lavender blush
+      "#fdfaf6", // Alabaster/Pearl
+      "#fff5f7", // Cherry blossom white
+      "#f9f1f6", // Lilac white
+      "#fdf6f5"  // Soft rose-white
     ];
 
     for (let i = 0; i < count; i++) {
@@ -349,24 +376,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const hy = -(13 * Math.cos(theta) - 5 * Math.cos(2 * theta) - 2 * Math.cos(3 * theta) - Math.cos(4 * theta));
 
       // Scale vector and add randomness for beautiful dispersion
-      const speedFactor = 0.22 + Math.random() * 0.45;
+      const speedFactor = 0.18 + Math.random() * 0.35;
       const vx = hx * speedFactor;
-      const vy = hy * speedFactor - 1.5; // Slight upward velocity boost
+      const vy = hy * speedFactor - 1.0; // Slight upward velocity boost
 
       confettiParticles.push({
         x: sourceX,
         y: sourceY,
         vx: vx,
         vy: vy,
-        size: 5 + Math.random() * 8,
+        size: 10 + Math.random() * 8, // Prominent petal sizing
         color: colors[Math.floor(Math.random() * colors.length)],
-        shape: Math.random() > 0.35 ? "rect" : "circle",
         rotation: Math.random() * Math.PI,
-        rotationSpeed: -0.1 + Math.random() * 0.2,
+        rotationSpeed: -0.06 + Math.random() * 0.12,
         opacity: 1,
-        fadeSpeed: 0.0035 + Math.random() * 0.006, // Slightly longer trail
-        gravity: 0.13 + Math.random() * 0.07, // Float down elegantly
-        drag: 0.965 + Math.random() * 0.015
+        fadeSpeed: 0.0025 + Math.random() * 0.004, // Elegant long trails
+        gravity: 0.05 + Math.random() * 0.03, // Floating descent
+        drag: 0.975 + Math.random() * 0.01
       });
     }
 
