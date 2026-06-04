@@ -52,7 +52,7 @@
   <div id="names-overlay" class="names-overlay hidden">
     <div id="name-left" class="flying-name">Amen</div>
     <div id="heart-collision" class="collision-heart">❤️</div>
-    <div id="name-right" class="flying-name">Rejoice</div>
+    <div id="name-right" class="flying-name">Rejoyce</div>
   </div>
 
   <!-- Main Interactive App Container -->
@@ -73,7 +73,7 @@
           </svg>
         </div>
         
-        <h1 class="main-title">May I be your boyfriend?</h1>
+        <h1 class="main-title">Will you go out with me?</h1>
         
         <div id="button-container" class="btn-group">
           <button id="btn-yes" class="pulse-glow" aria-label="Accept the proposal">Yes</button>
@@ -82,29 +82,41 @@
 
       <!-- Celebratory Success State -->
       <section id="success-section" class="card-section hidden">
-        <div class="success-badge">
-          <svg class="checkmark-svg" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="20 6 9 17 4 12" stroke="url(#check-gradient)"/>
+        <div class="success-badge romantic-badge">
+          <svg class="heart-lock-svg" viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Lock Shackle Group (animates down) -->
+            <g class="lock-shackle">
+              <path d="M 8,9 A 4 4 0 0 1 16,9 V 11 H 8 Z" stroke="url(#lock-gold-gradient)"/>
+            </g>
+            <!-- Heart Padlock Body -->
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#lock-pink-gradient)" stroke="none"/>
+            <!-- Keyhole detail -->
+            <circle cx="12" cy="11.5" r="1.2" fill="#1f1137"/>
+            <path d="M 11.6,12.5 H 12.4 L 12.7,15 H 11.3 Z" fill="#1f1137"/>
+            
             <defs>
-              <linearGradient id="check-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="lock-gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#ffd700" />
                 <stop offset="100%" stop-color="#ffa500" />
+              </linearGradient>
+              <linearGradient id="lock-pink-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff4b8b" />
+                <stop offset="100%" stop-color="#cc1e5d" />
               </linearGradient>
             </defs>
           </svg>
         </div>
         
-        <h2 class="success-title">It's a Date! ❤️</h2>
-        <p class="success-subtitle">Mission Accomplished. Here's our celebratory plan:</p>
+        <h2 class="success-title">Amen & Rejoyce ❤️</h2>
+        <!-- <p class="success-subtitle">Here is our celebratory plan:</p> -->
         
         <!-- Interactive Itinerary Timeline -->
         <div id="itinerary-timeline" class="timeline">
           
           <div class="timeline-item" style="--delay: 1">
             <div class="timeline-badge">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2a10 10 0 0 1 10 10c0 5.25-10 10-10 10S2 17.25 2 12A10 10 0 0 1 12 2z"/>
-                <circle cx="12" cy="12" r="3"/>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22V14M12 14C12 14 7.5 11 5 13C2.5 15 2 19 5 21C8 23 12 22 12 22M12 14C12 14 16.5 11 19 13C21.5 15 22 19 19 21C16 23 12 22 12 22M12 14C14.5 10.5 14 4.5 12 2C10 4.5 9.5 10.5 12 14Z"/>
               </svg>
             </div>
             <div class="timeline-content glass-card-nested">
@@ -116,10 +128,9 @@
           
           <div class="timeline-item" style="--delay: 2">
             <div class="timeline-badge">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 12V22H4V12M22 7H2V12H22V7Z"/>
+                <path d="M12 7V22M12 7C12 7 9.5 4 8 4C6.5 4 5 5.5 5 7C5 8.5 7.5 10 12 10M12 7C12 7 14.5 4 16 4C17.5 4 19 5.5 19 7C19 8.5 16.5 10 12 10"/>
               </svg>
             </div>
             <div class="timeline-content glass-card-nested">
@@ -131,8 +142,9 @@
           
           <div class="timeline-item" style="--delay: 3">
             <div class="timeline-badge">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 3H12L9 12M18 3H12L15 12M9 12V18M15 12V18M6 18H12M12 18H18M9 9H15"/>
+                <path d="M12 3C11.5 2 12.5 2 12 3Z"/>
               </svg>
             </div>
             <div class="timeline-content glass-card-nested">
@@ -142,6 +154,11 @@
             </div>
           </div>
           
+        </div>
+
+        <!-- Romantic Quote Footer -->
+        <div class="romantic-quote-footer">
+          <p class="quote-text">"Locked in a beautiful journey, together."</p>
         </div>
       </section>
 

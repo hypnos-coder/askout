@@ -427,6 +427,9 @@ document.addEventListener("DOMContentLoaded", () => {
           successSection.offsetHeight;
           successSection.classList.add("active");
 
+          // Start emitting romantic floating hearts inside the card
+          startSuccessHearts();
+
           // Grand corner firework celebration
           setTimeout(() => triggerConfettiExplosion(100, window.innerHeight - 100), 200);
           setTimeout(() => triggerConfettiExplosion(window.innerWidth - 100, window.innerHeight - 100), 400);
@@ -505,5 +508,43 @@ document.addEventListener("DOMContentLoaded", () => {
       playMusic();
     }
   }, { once: true });
+
+  /* =========================================================================
+     5. ROMANTIC FLOATING HEARTS EMITTER
+     ========================================================================= */
+  function startSuccessHearts() {
+    const card = document.getElementById("main-card");
+    if (!card) return;
+
+    // Create a container for the success hearts
+    const heartsContainer = document.createElement("div");
+    heartsContainer.className = "success-hearts-container";
+    card.appendChild(heartsContainer);
+
+    // Continuous spawn of romantic floating hearts
+    setInterval(() => {
+      if (successSection.classList.contains("hidden")) return;
+
+      const heart = document.createElement("span");
+      heart.className = "floating-heart-particle";
+      heart.innerHTML = Math.random() > 0.5 ? "❤️" : "💖";
+      
+      const size = 12 + Math.random() * 16;
+      const left = Math.random() * 100;
+      const duration = 4 + Math.random() * 3;
+      const opacity = 0.2 + Math.random() * 0.4;
+      
+      heart.style.left = `${left}%`;
+      heart.style.fontSize = `${size}px`;
+      heart.style.setProperty("--op", opacity);
+      heart.style.animationDuration = `${duration}s`;
+      
+      heartsContainer.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, duration * 1000);
+    }, 450);
+  }
 
 });
