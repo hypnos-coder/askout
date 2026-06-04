@@ -31,18 +31,25 @@
 <body>
 
   <!-- Looping Background Music -->
-  <audio id="bg-music" src="assets/music/background.mp3" loop preload="auto"></audio>
+  <audio id="bg-music" src="assets/music/background.mp3" loop preload="auto" autoplay playsinline></audio>
 
   <!-- Floating Premium Music Controller -->
   <div class="music-control-container">
-    <button id="btn-music-toggle" class="music-toggle" aria-label="Toggle background music">
-      <span class="music-icon">🎵</span>
-      <div class="music-waves hidden">
-        <span class="stroke"></span>
-        <span class="stroke"></span>
-        <span class="stroke"></span>
+    <div id="music-card" class="music-card">
+      <button id="btn-music-toggle" class="music-toggle" aria-label="Toggle background music">
+        <span class="music-icon">🎵</span>
+        <div class="music-waves hidden">
+          <span class="stroke"></span>
+          <span class="stroke"></span>
+          <span class="stroke"></span>
+        </div>
+      </button>
+      <div class="music-info">
+        <span class="music-status">NOW PLAYING</span>
+        <!-- Edit the song title below to match your downloaded MP3 -->
+        <span class="music-title">L-O-V-E — Nat King Cole</span>
       </div>
-    </button>
+    </div>
   </div>
 
   <!-- Confetti Canvas for physics explosion overlay -->

@@ -462,6 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
      4. BACKGROUND MUSIC & AUDIO CONTROLLER
      ========================================================================= */
   const bgMusic = document.getElementById("bg-music");
+  const musicCard = document.getElementById("music-card");
   const musicToggle = document.getElementById("btn-music-toggle");
   const musicIcon = musicToggle.querySelector(".music-icon");
   const musicWaves = musicToggle.querySelector(".music-waves");
@@ -472,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (bgMusic && bgMusic.paused) {
       bgMusic.play().then(() => {
         musicStarted = true;
-        musicToggle.classList.add("playing");
+        if (musicCard) musicCard.classList.add("playing");
         musicIcon.classList.add("hidden");
         musicWaves.classList.remove("hidden");
       }).catch(err => {
@@ -484,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function pauseMusic() {
     if (bgMusic && !bgMusic.paused) {
       bgMusic.pause();
-      musicToggle.classList.remove("playing");
+      if (musicCard) musicCard.classList.remove("playing");
       musicIcon.classList.remove("hidden");
       musicWaves.classList.add("hidden");
     }

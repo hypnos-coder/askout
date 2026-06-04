@@ -591,28 +591,59 @@ button {
   z-index: 1001;
 }
 
-.music-toggle {
+.music-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
-  width: 48px;
-  height: 48px;
+  border-radius: 40px;
+  padding: 8px 20px 8px 8px;
+  box-shadow: 0 10px 40px var(--glass-shadow);
+  transition: var(--transition-bounce);
+  max-width: 280px;
+}
+
+/* Glow effect when music is actively playing */
+.music-card.playing {
+  border-color: rgba(255, 75, 139, 0.25);
+  box-shadow: 0 0 25px rgba(255, 75, 139, 0.15), 0 10px 40px var(--glass-shadow);
+  animation: cardPulse 3s infinite ease-in-out;
+}
+
+@keyframes cardPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 75, 139, 0.1), 0 10px 40px var(--glass-shadow); }
+  50% { box-shadow: 0 0 35px rgba(255, 75, 139, 0.25), 0 10px 40px var(--glass-shadow); }
+}
+
+/* Play/Pause Button inside Card */
+.music-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 8px 32px var(--glass-shadow);
   cursor: pointer;
-  transition: var(--transition-bounce);
+  transition: var(--transition-smooth);
   color: var(--text-main);
   padding: 0;
+  flex-shrink: 0;
+}
+
+.music-card.playing .music-toggle {
+  background: rgba(255, 75, 139, 0.1);
+  border-color: var(--pink-primary);
 }
 
 .music-toggle:hover {
   transform: scale(1.08);
-  border-color: var(--pink-primary);
-  box-shadow: 0 0 15px var(--pink-glow), 0 8px 32px var(--glass-shadow);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--pink-light);
 }
 
 .music-toggle:active {
@@ -620,21 +651,53 @@ button {
 }
 
 .music-icon {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   transition: transform 0.4s ease;
 }
 
-.music-toggle.playing .music-icon {
+.music-card.playing .music-icon {
   transform: rotate(360deg);
 }
 
-/* Sound Wave Animation */
+/* Music info panel */
+.music-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  overflow: hidden;
+}
+
+.music-status {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  transition: var(--transition-smooth);
+}
+
+.music-card.playing .music-status {
+  color: var(--gold-primary);
+  text-shadow: 0 0 8px var(--gold-glow);
+}
+
+.music-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-main);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  letter-spacing: 0.2px;
+  max-width: 180px;
+}
+
+/* Sound Wave Animation inside card */
 .music-waves {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  height: 16px;
+  gap: 2.5px;
+  height: 14px;
   width: 100%;
 }
 
@@ -645,7 +708,7 @@ button {
 .music-waves .stroke {
   background: var(--pink-primary);
   height: 100%;
-  width: 3px;
+  width: 2.5px;
   border-radius: 4px;
   animation: sound-bounce 1.2s infinite ease-in-out;
   transform-origin: bottom;
@@ -680,8 +743,20 @@ button {
     top: 16px;
     right: 16px;
   }
+  .music-card {
+    max-width: 200px;
+    padding: 6px 14px 6px 6px;
+    gap: 8px;
+  }
   .music-toggle {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
+  }
+  .music-icon {
+    font-size: 0.95rem;
+  }
+  .music-title {
+    font-size: 0.72rem;
+    max-width: 120px;
   }
 }
