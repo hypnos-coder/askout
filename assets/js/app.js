@@ -581,3 +581,508 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
+/* =========================================================================
+   6. ITINERARY MAP + AGENTS ANIMATION
+   Replaces vertical timeline with a gameboard-style SVG map and two agents moving together.
+   ========================================================================= */
+/* =========================================================================
+   6. ITINERARY MAP + AGENTS ANIMATION
+   Replaces vertical timeline with an interactive curved SVG map and two agents moving together.
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const svg = document.getElementById('itinerary-svg');
+  if (!svg) return;
+
+  const places = [
+    { title: 'Como Garden', desc: 'Morning 10:30', icon: '🌿' },
+    { title: 'Mystery Stop', desc: 'Afternoon 14:00', icon: '🎁' },
+    { title: 'Dinner & Drinks', desc: 'Evening 19:30', icon: '🍽️' }
+  ];
+
+  // Coordinates of pins directly on the path
+  const coords = [
+    { x: 150, y: 220 },
+    { x: 400, y: 290 },
+    { x: 650, y: 220 }
+  ];
+
+  // Floating coordinates for card labels
+  const cardCoords = [
+    { x: 150, y: 130 },
+    { x: 400, y: 365 },
+    { x: 650, y: 130 }
+  ];
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const defs = document.createElementNS(ns, 'defs');
+
+  // --- Gradients ---
+  // Route track gradient
+  const grad = document.createElementNS(ns, 'linearGradient');
+  grad.setAttribute('id', 'route-grad');
+  grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%');
+  grad.setAttribute('x2', '100%'); grad.setAttribute('y2', '0%');
+  const stop1 = document.createElementNS(ns, 'stop'); stop1.setAttribute('offset', '0%'); stop1.setAttribute('stop-color', '#ff4b8b');
+  const stop2 = document.createElementNS(ns, 'stop'); stop2.setAttribute('offset', '50%'); stop2.setAttribute('stop-color', '#9b51e0');
+  const stop3 = document.createElementNS(ns, 'stop'); stop3.setAttribute('offset', '100%'); stop3.setAttribute('stop-color', '#ffd700');
+  grad.appendChild(stop1);
+  grad.appendChild(stop2);
+  grad.appendChild(stop3);
+  defs.appendChild(grad);
+
+  // Amen avatar gradient (Indigo to Pink)
+  const gradA = document.createElementNS(ns, 'linearGradient');
+  gradA.setAttribute('id', 'agent-a-grad');
+  gradA.setAttribute('x1', '0%'); gradA.setAttribute('y1', '0%');
+  gradA.setAttribute('x2', '100%'); gradA.setAttribute('y2', '100%');
+  const stopA1 = document.createElementNS(ns, 'stop'); stopA1.setAttribute('offset', '0%'); stopA1.setAttribute('stop-color', '#4b6cb7');
+  const stopA2 = document.createElementNS(ns, 'stop'); stopA2.setAttribute('offset', '100%'); stopA2.setAttribute('stop-color', '#ff4b8b');
+  gradA.appendChild(stopA1);
+  gradA.appendChild(stopA2);
+  defs.appendChild(gradA);
+
+  // Rejoyce avatar gradient (Pink to Gold)
+  const gradB = document.createElementNS(ns, 'linearGradient');
+  gradB.setAttribute('id', 'agent-b-grad');
+  gradB.setAttribute('x1', '0%'); gradB.setAttribute('y1', '0%');
+  gradB.setAttribute('x2', '100%'); gradB.setAttribute('y2', '100%');
+  const stopB1 = document.createElementNS(ns, 'stop'); stopB1.setAttribute('offset', '0%'); stopB1.setAttribute('stop-color', '#ff4b8b');
+  const stopB2 = document.createElementNS(ns, 'stop'); stopB2.setAttribute('offset', '100%'); stopB2.setAttribute('stop-color', '#ffd700');
+  gradB.appendChild(stopB1);
+  gradB.appendChild(stopB2);
+  defs.appendChild(gradB);
+
+  // --- Glow Filter ---
+  const routeGlow = document.createElementNS(ns, 'filter');
+  routeGlow.setAttribute('id', 'route-glow');
+  const feBlur = document.createElementNS(ns, 'feGaussianBlur');
+  feBlur.setAttribute('stdDeviation', '4');
+  feBlur.setAttribute('result', 'blur');
+  routeGlow.appendChild(feBlur);
+  defs.appendChild(routeGlow);
+
+  svg.appendChild(defs);
+
+  // --- Decorative Landmarks (Background) ---
+  // Clouds
+  const cloud1 = document.createElementNS(ns, 'text');
+  cloud1.setAttribute('class', 'map-cloud');
+  cloud1.setAttribute('x', '0'); cloud1.setAttribute('y', '50');
+  cloud1.style.fontSize = '24px';
+  cloud1.textContent = '☁️';
+  svg.appendChild(cloud1);
+
+  const cloud2 = document.createElementNS(ns, 'text');
+  cloud2.setAttribute('class', 'map-cloud');
+  cloud2.setAttribute('x', '0'); cloud2.setAttribute('y', '110');
+  cloud2.style.fontSize = '18px';
+  cloud2.style.animationDelay = '-22s';
+  cloud2.style.animationDuration = '50s';
+  cloud2.textContent = '☁️';
+  svg.appendChild(cloud2);
+
+  // Compass Rose (Top-Right)
+  const compassGroup = document.createElementNS(ns, 'g');
+  compassGroup.setAttribute('class', 'map-compass');
+  compassGroup.setAttribute('transform', 'translate(740, 65)');
+  
+  const compCircle1 = document.createElementNS(ns, 'circle');
+  compCircle1.setAttribute('r', '22'); compCircle1.setAttribute('fill', 'none');
+  compCircle1.setAttribute('stroke', 'rgba(255, 215, 0, 0.15)'); compCircle1.setAttribute('stroke-width', '1.5');
+  compassGroup.appendChild(compCircle1);
+
+  const compCircle2 = document.createElementNS(ns, 'circle');
+  compCircle2.setAttribute('r', '18'); compCircle2.setAttribute('fill', 'none');
+  compCircle2.setAttribute('stroke', 'rgba(255, 215, 0, 0.3)'); compCircle2.setAttribute('stroke-width', '1');
+  compCircle2.setAttribute('stroke-dasharray', '3 3');
+  compassGroup.appendChild(compCircle2);
+
+  const compNeedle = document.createElementNS(ns, 'polygon');
+  compNeedle.setAttribute('points', '0,-16 4,-4 16,0 4,4 0,16 -4,4 -16,0 -4,-4');
+  compNeedle.setAttribute('fill', 'url(#lock-gold-gradient)');
+  compassGroup.appendChild(compNeedle);
+
+  const compCenter = document.createElementNS(ns, 'circle');
+  compCenter.setAttribute('r', '3.5'); compCenter.setAttribute('fill', '#ffffff');
+  compassGroup.appendChild(compCenter);
+  svg.appendChild(compassGroup);
+
+  // Mini-Landmarks
+  const landmarks = [
+    { x: 90, y: 200, emoji: '🌳' },
+    { x: 190, y: 250, emoji: '🌸' },
+    { x: 350, y: 260, emoji: '✨' },
+    { x: 450, y: 310, emoji: '🎈' },
+    { x: 600, y: 250, emoji: '🌹' },
+    { x: 700, y: 200, emoji: '🥂' }
+  ];
+  landmarks.forEach(lm => {
+    const el = document.createElementNS(ns, 'text');
+    el.setAttribute('x', String(lm.x));
+    el.setAttribute('y', String(lm.y));
+    el.setAttribute('opacity', '0.45');
+    el.style.fontSize = '16px';
+    el.style.pointerEvents = 'none';
+    el.textContent = lm.emoji;
+    svg.appendChild(el);
+  });
+
+  // --- Beautiful Bezier Scenic Curved Path ---
+  // A smooth winding curve connecting Como Garden (150, 220), Mystery Stop (400, 290), Dinner (650, 220)
+  const pathD = "M 150 220 C 270 160, 280 290, 400 290 C 520 290, 530 160, 650 220";
+
+  const glowPath = document.createElementNS(ns, 'path');
+  glowPath.setAttribute('d', pathD);
+  glowPath.setAttribute('class', 'map-path-glow');
+  glowPath.setAttribute('filter', 'url(#route-glow)');
+  glowPath.setAttribute('stroke', 'rgba(255,255,255,0.05)');
+  svg.appendChild(glowPath);
+
+  const routePath = document.createElementNS(ns, 'path');
+  routePath.setAttribute('d', pathD);
+  routePath.setAttribute('class', 'map-path');
+  routePath.setAttribute('stroke', 'url(#route-grad)');
+  svg.appendChild(routePath);
+
+  // --- Node Pins & Cards Setup ---
+  const cardGroups = [];
+  coords.forEach((coord, index) => {
+    const cardCoord = cardCoords[index];
+
+    // Decorative anchor line connecting pin to floating label card
+    const anchor = document.createElementNS(ns, 'line');
+    anchor.setAttribute('x1', String(coord.x));
+    anchor.setAttribute('y1', String(coord.y));
+    anchor.setAttribute('x2', String(cardCoord.x));
+    anchor.setAttribute('y2', String(cardCoord.y));
+    anchor.setAttribute('stroke', 'rgba(255, 255, 255, 0.12)');
+    anchor.setAttribute('stroke-width', '1.5');
+    anchor.setAttribute('stroke-dasharray', '3 3');
+    svg.appendChild(anchor);
+
+    // Pin Group (drawn on path)
+    const pinGroup = document.createElementNS(ns, 'g');
+    pinGroup.setAttribute('transform', `translate(${coord.x}, ${coord.y})`);
+
+    const ring = document.createElementNS(ns, 'circle');
+    ring.setAttribute('class', 'map-node-ring');
+    ring.setAttribute('r', '11');
+    pinGroup.appendChild(ring);
+
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('class', 'map-node-dot');
+    dot.setAttribute('r', '5.5');
+    if (index === 0) dot.style.fill = '#ff4b8b';
+    if (index === 1) dot.style.fill = '#9b51e0';
+    if (index === 2) dot.style.fill = '#ffd700';
+    pinGroup.appendChild(dot);
+    svg.appendChild(pinGroup);
+
+    // Floating glassmorphic card bubble
+    const group = document.createElementNS(ns, 'g');
+    group.setAttribute('class', 'map-node-card');
+    group.setAttribute('transform', `translate(${cardCoord.x}, ${cardCoord.y})`);
+
+    const card = document.createElementNS(ns, 'rect');
+    card.setAttribute('x', '-80');
+    card.setAttribute('y', '-28');
+    card.setAttribute('rx', '14');
+    card.setAttribute('ry', '14');
+    card.setAttribute('width', '160');
+    card.setAttribute('height', '56');
+    group.appendChild(card);
+
+    const icon = document.createElementNS(ns, 'text');
+    icon.setAttribute('class', 'map-node-icon');
+    icon.setAttribute('x', '-60');
+    icon.setAttribute('y', '6');
+    icon.textContent = places[index].icon;
+    group.appendChild(icon);
+
+    const title = document.createElementNS(ns, 'text');
+    title.setAttribute('class', 'map-node-title');
+    title.setAttribute('x', '-35');
+    title.setAttribute('y', '-4');
+    title.setAttribute('text-anchor', 'start');
+    title.textContent = places[index].title;
+    group.appendChild(title);
+
+    const desc = document.createElementNS(ns, 'text');
+    desc.setAttribute('class', 'map-node-desc');
+    desc.setAttribute('x', '-35');
+    desc.setAttribute('y', '13');
+    desc.setAttribute('text-anchor', 'start');
+    desc.textContent = places[index].desc;
+    group.appendChild(desc);
+
+    svg.appendChild(group);
+    cardGroups.push(group);
+  });
+
+  // --- Speech Bubble Setup (midpoint floating text) ---
+  const bubble = document.createElementNS(ns, 'g');
+  bubble.setAttribute('class', 'agent-bubble');
+
+  const bubbleContent = document.createElementNS(ns, 'g');
+  bubbleContent.setAttribute('class', 'agent-bubble-content');
+
+  const bubbleBg = document.createElementNS(ns, 'path');
+  bubbleBg.setAttribute('class', 'agent-bubble-bg');
+  // Speech bubble path (160 width, 42 height, pointed down in center)
+  bubbleBg.setAttribute('d', 'M -80 -46 h 160 a 6 6 0 0 1 6 6 v 30 a 6 6 0 0 1 -6 6 h -74 l -6 6 l -6 -6 h -74 a 6 6 0 0 1 -6 -6 v -30 a 6 6 0 0 1 6 -6 z');
+  bubbleContent.appendChild(bubbleBg);
+
+  const bubbleText = document.createElementNS(ns, 'text');
+  bubbleText.setAttribute('class', 'agent-bubble-text');
+  bubbleText.setAttribute('y', '-25');
+  bubbleText.textContent = '';
+  bubbleContent.appendChild(bubbleText);
+  
+  bubble.appendChild(bubbleContent);
+  svg.appendChild(bubble);
+
+  // --- Agents Setup ---
+  function makeAgent(id, gradId, label, initial) {
+    const agent = document.createElementNS(ns, 'g');
+    agent.setAttribute('class', 'agent');
+    agent.setAttribute('id', id);
+
+    const shadow = document.createElementNS(ns, 'circle');
+    shadow.setAttribute('class', 'map-agent-shadow');
+    shadow.setAttribute('cx', '0');
+    shadow.setAttribute('cy', '18');
+    shadow.setAttribute('r', '13');
+    agent.appendChild(shadow);
+
+    const pulse = document.createElementNS(ns, 'circle');
+    pulse.setAttribute('class', 'agent-pulse-ring');
+    pulse.setAttribute('r', '17');
+    agent.appendChild(pulse);
+
+    const circle = document.createElementNS(ns, 'circle');
+    circle.setAttribute('class', 'agent-avatar-bg');
+    circle.setAttribute('r', '13');
+    circle.setAttribute('fill', `url(#${gradId})`);
+    agent.appendChild(circle);
+
+    const textInit = document.createElementNS(ns, 'text');
+    textInit.setAttribute('class', 'agent-avatar-text');
+    textInit.textContent = initial;
+    agent.appendChild(textInit);
+
+    const textLabel = document.createElementNS(ns, 'text');
+    textLabel.setAttribute('class', 'agent-label');
+    textLabel.setAttribute('y', '20');
+    textLabel.textContent = label;
+    agent.appendChild(textLabel);
+
+    svg.appendChild(agent);
+    return agent;
+  }
+
+  const agentA = makeAgent('agent-a', 'agent-a-grad', 'Amen', 'A');
+  const agentB = makeAgent('agent-b', 'agent-b-grad', 'Rejoyce', 'R');
+
+  // --- Heart Particle Emitter ---
+  let lastHeartTime = 0;
+  function emitNodeHeart(x, y) {
+    const now = performance.now();
+    if (now - lastHeartTime < 450) return; // rate limit
+    lastHeartTime = now;
+
+    const heart = document.createElementNS(ns, 'text');
+    heart.setAttribute('x', String(x + (Math.random() - 0.5) * 15));
+    heart.setAttribute('y', String(y - 12));
+    heart.style.fontSize = `${10 + Math.random() * 8}px`;
+    heart.style.fill = '#ff4b8b';
+    heart.style.opacity = '0.9';
+    heart.style.pointerEvents = 'none';
+    heart.style.transition = 'transform 2.2s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 2.2s ease-out';
+    heart.textContent = Math.random() > 0.5 ? '❤️' : '💖';
+    
+    // insert right before bubble to stay in background
+    svg.insertBefore(heart, bubble);
+
+    // Force reflow
+    heart.getBoundingClientRect();
+
+    const tx = (Math.random() - 0.5) * 45;
+    const ty = -65 - Math.random() * 35;
+    heart.style.transform = `translate(${tx}px, ${ty}px) scale(0.6)`;
+    heart.style.opacity = '0';
+
+    setTimeout(() => {
+      heart.remove();
+    }, 2200);
+  }
+
+  // --- Path Animation & Narrative State Machine ---
+  const pathLen = routePath.getTotalLength();
+  
+  // automatic narrative loop timetable (32 seconds total)
+  function getTimelineState(timeMs) {
+    const cycle = (timeMs / 1000) % 32;
+    if (cycle < 4) {
+      return { phase: 'pause', nodeIndex: 0, progress: 0.0, text: "Como Garden first! 🌿" };
+    } else if (cycle < 10) {
+      // Walk 0 -> 1. Duration: 6s.
+      const t = (cycle - 4) / 6;
+      return { phase: 'walk', from: 0, to: 1, progress: t * 0.5 };
+    } else if (cycle < 14) {
+      return { phase: 'pause', nodeIndex: 1, progress: 0.5, text: "What is the surprise? 🎁" };
+    } else if (cycle < 20) {
+      // Walk 1 -> 2. Duration: 6s.
+      const t = (cycle - 14) / 6;
+      return { phase: 'walk', from: 1, to: 2, progress: 0.5 + t * 0.5 };
+    } else if (cycle < 24) {
+      return { phase: 'pause', nodeIndex: 2, progress: 1.0, text: "Dinner & Wine! 🥂" };
+    } else if (cycle < 28) {
+      // Walk 2 -> 1 (reverse). Duration: 4s.
+      const t = (cycle - 20) / 4;
+      return { phase: 'walk', from: 2, to: 1, progress: 1.0 - t * 0.5 };
+    } else {
+      // Walk 1 -> 0 (reverse). Duration: 4s.
+      const t = (cycle - 28) / 4;
+      return { phase: 'walk', from: 1, to: 0, progress: 0.5 - t * 0.5 };
+    }
+  }
+
+  function positionOnPath(progress) {
+    const length = Math.max(0, Math.min(progress, 1)) * pathLen;
+    const point = routePath.getPointAtLength(length);
+    
+    // Find nearby point for tangent direction
+    const delta = length > pathLen - 2 ? -2 : 2;
+    const nextPoint = routePath.getPointAtLength(length + delta);
+    
+    let dx = nextPoint.x - point.x;
+    let dy = nextPoint.y - point.y;
+    if (delta < 0) {
+      dx = -dx;
+      dy = -dy;
+    }
+    
+    const distance = Math.hypot(dx, dy) || 1;
+    const tangent = { x: dx / distance, y: dy / distance };
+    const perp = { x: -tangent.y, y: tangent.x };
+    return { x: point.x, y: point.y, perp };
+  }
+
+  let currentProgress = 0.0;
+  let isManualMode = false;
+  let manualTargetNode = 0;
+  let manualIdleTimer = null;
+
+  // Clicking a card routes agents there
+  cardGroups.forEach((cardGroup, index) => {
+    cardGroup.addEventListener('click', () => {
+      isManualMode = true;
+      manualTargetNode = index;
+      
+      if (manualIdleTimer) clearTimeout(manualIdleTimer);
+      
+      // Auto tour resumes after 10 seconds of idle
+      manualIdleTimer = setTimeout(() => {
+        isManualMode = false;
+      }, 10000);
+    });
+  });
+
+  function animate() {
+    const now = performance.now();
+    let targetProgress = 0.0;
+    let phase = 'walk';
+    let bubbleText = '';
+    let activeNode = -1;
+
+    if (isManualMode) {
+      const targetProgressMap = [0.0, 0.5, 1.0];
+      const destProgress = targetProgressMap[manualTargetNode];
+      const diff = destProgress - currentProgress;
+      
+      if (Math.abs(diff) < 0.004) {
+        currentProgress = destProgress;
+        phase = 'pause';
+        activeNode = manualTargetNode;
+        const manualTexts = [
+          "Let's visit Como Garden! 🌿",
+          "What is the Mystery Stop? 🎁",
+          "Yay, Dinner & Drinks! 🥂"
+        ];
+        bubbleText = manualTexts[manualTargetNode];
+      } else {
+        // Move towards target
+        currentProgress += Math.sign(diff) * 0.005;
+        phase = 'walk';
+      }
+    } else {
+      const state = getTimelineState(now);
+      const diff = state.progress - currentProgress;
+
+      // Smoothly catch up when resuming from manual mode
+      if (Math.abs(diff) > 0.01) {
+        currentProgress += Math.sign(diff) * 0.005;
+        phase = 'walk';
+      } else {
+        currentProgress = state.progress;
+        phase = state.phase;
+        if (phase === 'pause') {
+          activeNode = state.nodeIndex;
+          bubbleText = state.text;
+        }
+      }
+    }
+
+    // Set active states on cards
+    cardGroups.forEach((cardGroup, idx) => {
+      if (idx === activeNode) {
+        cardGroup.classList.add('active');
+      } else {
+        cardGroup.classList.remove('active');
+      }
+    });
+
+    // Compute base coordinate on curve
+    const pos = positionOnPath(currentProgress);
+    
+    // Perpendicular side offsets for side-by-side walk (14px apart)
+    const side = 14;
+    let posX_A = pos.x + pos.perp.x * side;
+    let posY_A = pos.y + pos.perp.y * side;
+    let posX_B = pos.x - pos.perp.x * side;
+    let posY_B = pos.y - pos.perp.y * side;
+
+    // Apply vertical stepping bob animation while walking
+    if (phase === 'walk') {
+      const bobA = Math.abs(Math.sin(now * 0.012)) * 5;
+      const bobB = Math.abs(Math.sin(now * 0.012 + Math.PI / 2)) * 5;
+      posY_A -= bobA;
+      posY_B -= bobB;
+    }
+
+    // Set agent transforms
+    agentA.setAttribute('transform', `translate(${posX_A}, ${posY_A})`);
+    agentB.setAttribute('transform', `translate(${posX_B}, ${posY_B})`);
+
+    // Manage bubble speech popup
+    if (phase === 'pause' && activeNode !== -1) {
+      const midX = (posX_A + posX_B) / 2;
+      const midY = Math.min(posY_A, posY_B) - 24;
+      bubble.setAttribute('transform', `translate(${midX}, ${midY})`);
+      bubble.querySelector('.agent-bubble-text').textContent = bubbleText;
+      bubble.classList.add('visible');
+      
+      // Emit hearts from pin coordinate
+      const nodeCoord = coords[activeNode];
+      emitNodeHeart(nodeCoord.x, nodeCoord.y);
+    } else {
+      bubble.classList.remove('visible');
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+});
+
