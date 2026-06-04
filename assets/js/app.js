@@ -784,6 +784,9 @@ document.addEventListener('DOMContentLoaded', () => {
     group.setAttribute('class', 'map-node-card');
     group.setAttribute('transform', `translate(${cardCoord.x}, ${cardCoord.y})`);
 
+    const contentGroup = document.createElementNS(ns, 'g');
+    contentGroup.setAttribute('class', 'map-node-card-content');
+
     const card = document.createElementNS(ns, 'rect');
     card.setAttribute('x', '-80');
     card.setAttribute('y', '-28');
@@ -791,14 +794,14 @@ document.addEventListener('DOMContentLoaded', () => {
     card.setAttribute('ry', '14');
     card.setAttribute('width', '160');
     card.setAttribute('height', '56');
-    group.appendChild(card);
+    contentGroup.appendChild(card);
 
     const icon = document.createElementNS(ns, 'text');
     icon.setAttribute('class', 'map-node-icon');
     icon.setAttribute('x', '-60');
     icon.setAttribute('y', '6');
     icon.textContent = places[index].icon;
-    group.appendChild(icon);
+    contentGroup.appendChild(icon);
 
     const title = document.createElementNS(ns, 'text');
     title.setAttribute('class', 'map-node-title');
@@ -806,7 +809,7 @@ document.addEventListener('DOMContentLoaded', () => {
     title.setAttribute('y', '-4');
     title.setAttribute('text-anchor', 'start');
     title.textContent = places[index].title;
-    group.appendChild(title);
+    contentGroup.appendChild(title);
 
     const desc = document.createElementNS(ns, 'text');
     desc.setAttribute('class', 'map-node-desc');
@@ -814,8 +817,9 @@ document.addEventListener('DOMContentLoaded', () => {
     desc.setAttribute('y', '13');
     desc.setAttribute('text-anchor', 'start');
     desc.textContent = places[index].desc;
-    group.appendChild(desc);
+    contentGroup.appendChild(desc);
 
+    group.appendChild(contentGroup);
     svg.appendChild(group);
     cardGroups.push(group);
   });
